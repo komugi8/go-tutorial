@@ -1,22 +1,43 @@
 package chapter2
 
-import "net/http"
+import (
+	"io"
+	"log"
+	"net/http"
+	"net/url"
+)
 
 func Get(w http.ResponseWriter, r *http.Request) {
-	req, err := http.NewRequest("GET", "http://localhost:8081/users?age=25", nil)
+	apiURL := "http://mock:80/users"
+	params := url.Values{}
+	params.Set("age", "25")
+	apiURL += "?" + params.Encode()
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", apiURL, nil)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Creating Request Error", http.StatusInternalServerError)
 		return
 	}
-	req.Header.Set("key", "dip")
+	req.Header.Add("key", "dip")
+	log.Printf("Request URL: %s\n", req.URL.String())
+	log.Printf("Request Header: %s\n", req.Header.Get("key"))
 
-	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Sending Request Error", http.StatusInternalServerError)
+		log.Printf("Error: %+v\n", err)
 		return
 	}
 	defer resp.Body.Close()
 
 	w.WriteHeader(http.StatusOK)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error: %+v\n", err)
+		return
+	}
+	log.Printf("Response Body: %s\n", string(body))
+
+	w.Write(body)
 }
