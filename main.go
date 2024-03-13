@@ -14,7 +14,8 @@ func main() {
 	// EchoAPI
 	mux.HandleFunc("/echo", chapter1.GetEcho)
 
-	mux.HandleFunc("/users", chapter2.Get)
+	mux.HandleFunc("/users/get", chapter2.Get)
+	mux.HandleFunc("/users/post", chapter2.Post)
 
 	if err := http.ListenAndServe("0.0.0.0:8080", mux); err != nil {
 		log.Fatalf("failed to launch service: %+v", err)
