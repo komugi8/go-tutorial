@@ -14,8 +14,7 @@ func main() {
 	// EchoAPI
 	mux.HandleFunc("/echo", chapter1.GetEcho)
 
-	// FIXME: ハンドラ追加時はこちらにコードを追加してください
-	mux.HandleFunc("/echo2/get", chapter2.Get)
+	mux.HandleFunc("/users", chapter2.Get)
 
 	if err := http.ListenAndServe("0.0.0.0:8080", mux); err != nil {
 		log.Fatalf("failed to launch service: %+v", err)
